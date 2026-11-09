@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>一个人的剧组</title>
+<meta name="description" content="一个大一学生，一个月，16 万粉丝。点几下，拍一条你自己的 AI 视频。">
+<meta property="og:title" content="一个人的剧组">
+<meta property="og:description" content="点几下，拍一条你自己的 AI 讲书视频。">
+<meta property="og:image" content="a/jq_1.jpg">
+<meta name="theme-color" content="#0b0a10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&family=Silkscreen:wght@400;700&family=Noto+Sans+SC:wght@400;500;900&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+/* Concept: a pixel-game film set. Dark arcade cabinet, gold light, CRT glass; every section is a "level" of making one video. */
+:root{
+  --bg:#0b0a10; --bg2:#14121c; --card:#1a1724; --line:#2c2838;
+  --ink:#f3ecdc; --dim:#958da3; --gold:#ffc94a; --gold2:#ff9a2e; --red:#ff4f5e; --cyan:#58e1ff; --mint:#7dffb0;
+  --px:"Silkscreen",ui-monospace,monospace;
+  --zh-px:"ZCOOL QingKe HuangYou","Noto Sans SC",sans-serif;
+  --body:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+img,video{max-width:100%;display:block}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.wrap{width:100%;max-width:1180px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+section{position:relative;padding-block:clamp(72px,12vw,140px)}
+.lvl{font-family:var(--px);font-size:12px;letter-spacing:.18em;color:var(--gold);display:inline-flex;align-items:center;gap:10px;text-transform:uppercase}
+.lvl::before{content:"";width:10px;height:10px;background:var(--gold);box-shadow:12px 0 0 var(--gold2),24px 0 0 var(--red);margin-right:26px}
+h2{font-family:var(--zh-px);font-weight:400;font-size:clamp(40px,7vw,88px);line-height:1.05;margin:.35em 0 .3em;text-wrap:balance;letter-spacing:.01em}
+.sub{color:var(--dim);font-size:clamp(15px,1.6vw,18px);max-width:34em;margin:0}
+.gold{color:var(--gold)}
+.px-shadow{text-shadow:4px 4px 0 #6a3b00,8px 8px 0 rgba(0,0,0,.4)}
+
+/* pixel stars backdrop */
+#stars{position:fixed;inset:0;width:100%;height:100%;z-index:-1;opacity:.7}
+.scan{position:fixed;inset:0;pointer-events:none;z-index:50;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 1px,transparent 1px 3px);mix-blend-mode:multiply;opacity:.5}
+
+/* ===== HERO ===== */
+.hero{padding-top:clamp(28px,6vw,60px);padding-bottom:40px;min-height:auto}
+.topbar{display:flex;justify-content:space-between;align-items:center;font-family:var(--px);font-size:11px;letter-spacing:.16em;color:var(--dim);gap:12px;flex-wrap:wrap}
+.topbar .rec{display:flex;align-items:center;gap:8px;color:var(--ink)}
+.topbar .rec i{width:8px;height:8px;background:var(--red);animation:blink 1.2s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(24px,4vw,56px);align-items:center;margin-top:clamp(28px,5vw,64px)}
+.hero h1{font-family:var(--zh-px);font-weight:400;font-size:clamp(56px,10.5vw,148px);line-height:.95;margin:0;letter-spacing:.01em}
+.hero h1 .l2{display:block;color:var(--gold)}
+.hero .sub{margin-top:22px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;margin-top:30px;background:var(--line);border:2px solid var(--line)}
+.stats div{background:var(--bg2);padding:14px 12px}
+.stats b{display:block;font-family:var(--px);font-size:clamp(22px,3.2vw,38px);line-height:1.1;color:var(--ink);font-variant-numeric:tabular-nums}
+.stats span{font-size:12px;color:var(--dim)}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.btn{display:inline-flex;align-items:center;gap:10px;border:0;padding:16px 22px;font-family:var(--zh-px);font-size:22px;letter-spacing:.04em;background:var(--gold);color:#1a1200;
+  box-shadow:0 4px 0 #a86a00,0 8px 0 rgba(0,0,0,.35);transform:translateY(0);transition:transform .08s,box-shadow .08s;text-decoration:none}
+.btn:active{transform:translateY(4px);box-shadow:0 0 0 #a86a00,0 4px 0 rgba(0,0,0,.35)}
+.btn.ghost{background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--line)}
+.btn .arr{font-family:var(--px);font-size:14px}
+
+/* CRT cabinet */
+.cab{position:relative;background:linear-gradient(#2a2433,#16131d);padding:14px 14px 46px;border-radius:18px;box-shadow:0 0 0 2px #3a3346,0 30px 80px rgba(0,0,0,.6),0 0 120px rgba(255,201,74,.12)}
+.crt{position:relative;aspect-ratio:16/9;overflow:hidden;border-radius:10px;background:#000}
+.crt video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.crt video.on{opacity:1}
+.crt::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55)),repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 2px,transparent 2px 4px);pointer-events:none}
+.cab .knobs{position:absolute;left:18px;right:18px;bottom:12px;display:flex;justify-content:space-between;align-items:center;font-family:var(--px);font-size:10px;letter-spacing:.14em;color:var(--dim)}
+.chs{display:flex;gap:6px}
+.chs button{width:30px;height:20px;border:0;background:#2e2839;color:var(--dim);font-family:var(--px);font-size:10px}
+.chs button.on{background:var(--gold);color:#1a1200}
+.saul{position:absolute;right:-18px;bottom:-34px;width:clamp(110px,15vw,190px);filter:drop-shadow(0 12px 20px rgba(0,0,0,.6));animation:bob 3s ease-in-out infinite;pointer-events:none}
+@keyframes bob{50%{transform:translateY(-8px)}}
+.bubble{position:absolute;right:clamp(90px,12vw,160px);bottom:clamp(90px,12vw,150px);background:var(--ink);color:#1a1200;font-family:var(--zh-px);font-size:16px;padding:8px 12px;white-space:nowrap;box-shadow:4px 4px 0 #000}
+.bubble::after{content:"";position:absolute;right:-10px;bottom:6px;border:6px solid transparent;border-left-color:var(--ink)}
+
+/* ===== COVER WALL ===== */
+.wall{overflow:hidden;padding-block:26px;border-block:2px solid var(--line);background:var(--bg2)}
+.track{display:flex;gap:14px;width:max-content;animation:slide 40s linear infinite}
+.track img{width:clamp(120px,16vw,180px);aspect-ratio:3/4;object-fit:cover;border:2px solid #000;box-shadow:4px 4px 0 #000}
+@keyframes slide{to{transform:translateX(-50%)}}
+.wall-cap{display:flex;justify-content:space-between;font-family:var(--px);font-size:11px;letter-spacing:.14em;color:var(--dim);margin-bottom:14px;gap:12px;flex-wrap:wrap}
+
+/* ===== CREW ===== */
+.crew{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:36px}
+.role{position:relative;height:150px;perspective:800px;border:0;background:none;padding:0;text-align:left}
+.role .f,.role .b{position:absolute;inset:0;backface-visibility:hidden;transition:transform .6s cubic-bezier(.3,1.4,.5,1);padding:16px;display:flex;flex-direction:column;justify-content:space-between;border:2px solid var(--line)}
+.role .f{background:var(--card)}
+.role .b{background:var(--gold);color:#1a1200;transform:rotateY(180deg);border-color:#a86a00}
+.role.flip .f{transform:rotateY(-180deg)}
+.role.flip .b{transform:rotateY(0)}
+.role small{font-family:var(--px);font-size:10px;letter-spacing:.16em;color:var(--dim)}
+.role .b small{color:#6a4300}
+.role b{font-family:var(--zh-px);font-weight:400;font-size:30px;line-height:1}
+.role em{font-style:normal;font-size:13px;color:var(--dim)}
+.role .b em{color:#5a3a00}
+.crew-foot{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:12px;flex-wrap:wrap;color:var(--dim);font-size:14px}
+
+/* ===== BEFORE / AFTER ===== */
+.ba{position:relative;aspect-ratio:16/9;margin-top:36px;overflow:hidden;border:2px solid var(--line);touch-action:none;cursor:ew-resize;user-select:none;max-width:100%}
+.ba img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ba .after{clip-path:inset(0 0 0 var(--x,50%))}
+.ba .bar{position:absolute;top:0;bottom:0;left:var(--x,50%);width:4px;margin-left:-2px;background:var(--gold)}
+.ba .bar::after{content:"◀▶";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--gold);color:#1a1200;font-family:var(--px);font-size:11px;padding:10px 8px;white-space:nowrap}
+.ba .t{position:absolute;top:12px;font-family:var(--px);font-size:11px;letter-spacing:.12em;padding:6px 10px;background:rgba(0,0,0,.75)}
+.ba .t.l{left:12px;color:var(--red)} .ba .t.r{right:12px;color:var(--mint)}
+.quotes{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.quotes span{font-family:var(--zh-px);font-size:20px;padding:6px 12px;background:#2a1418;color:#ffb3ba;border:2px solid #4a1c22}
+
+/* ===== STUDIO (simulator) ===== */
+#studio{background:linear-gradient(180deg,transparent,rgba(255,201,74,.05) 30%,transparent)}
+.studio{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,380px);gap:clamp(20px,4vw,48px);margin-top:36px;align-items:start}
+.steps{display:flex;flex-direction:column;gap:22px;min-width:0}
+.step{border:2px solid var(--line);background:var(--bg2);padding:18px;transition:border-color .3s,opacity .3s}
+.step.lock{opacity:.35;pointer-events:none}
+.step.done{border-color:#4a4258}
+.step-h{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.step-h i{font-style:normal;font-family:var(--px);font-size:12px;width:28px;height:28px;display:grid;place-items:center;background:var(--line);color:var(--dim)}
+.step.cur .step-h i{background:var(--gold);color:#1a1200}
+.step.done .step-h i{background:var(--mint);color:#062}
+.step-h b{font-family:var(--zh-px);font-weight:400;font-size:24px}
+.opts{display:grid;gap:10px}
+.opts.books{grid-template-columns:repeat(5,minmax(0,1fr))}
+.opts.two{grid-template-columns:repeat(3,minmax(0,1fr))}
+.opt{border:2px solid var(--line);background:var(--card);padding:12px;text-align:left;display:flex;flex-direction:column;gap:6px;transition:transform .12s,border-color .2s,background .2s;min-width:0}
+.opt:hover{transform:translateY(-2px);border-color:#5a5068}
+.opt.sel{border-color:var(--gold);background:#2a2214;box-shadow:4px 4px 0 #a86a00}
+.opt .th{aspect-ratio:16/10;background-size:cover;background-position:center top;border:1px solid #000}
+.opt b{font-family:var(--zh-px);font-weight:400;font-size:19px;line-height:1.15}
+.opt em{font-style:normal;font-size:12px;color:var(--dim);line-height:1.4}
+.opt.hook{font-size:16px;line-height:1.5}
+.opt.hook b{font-family:var(--body);font-weight:500;font-size:16px}
+.shoot{width:100%;justify-content:center;font-size:28px;padding:20px}
+.shoot[disabled]{filter:grayscale(1);opacity:.4;pointer-events:none}
+
+/* phone */
+.phone-col{position:sticky;top:20px;min-width:0}
+.phone{position:relative;width:100%;max-width:340px;margin-inline:auto;aspect-ratio:9/19;background:#000;border-radius:40px;padding:12px;box-shadow:0 0 0 2px #333,0 0 0 8px #111,0 40px 80px rgba(0,0,0,.6)}
+.screen{position:relative;width:100%;height:100%;border-radius:30px;overflow:hidden;background:#000}
+.notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:90px;height:24px;background:#000;border-radius:20px;z-index:9}
+.idle{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px;color:var(--dim);font-size:14px}
+.idle .big{font-family:var(--zh-px);font-size:34px;color:var(--ink);line-height:1.1}
+.idle img{width:110px;animation:bob 3s ease-in-out infinite}
+/* console */
+.console{position:absolute;inset:0;padding:48px 16px 16px;font-family:var(--mono);font-size:11px;line-height:1.7;color:#9ef0b8;background:#030806;overflow:hidden;display:none}
+.console .ln{white-space:pre-wrap;word-break:break-all}
+.console .ln b{color:var(--gold);font-weight:700}
+.console .pbar{height:8px;background:#0e2216;margin-top:10px}
+.console .pbar i{display:block;height:100%;width:0;background:var(--mint);transition:width .3s}
+/* player */
+.player{position:absolute;inset:0;display:none;background:#000}
+.player .top{position:absolute;top:44px;left:0;right:0;text-align:center;font-size:12px;color:rgba(255,255,255,.7);z-index:3}
+.player .top b{color:#fff;border-bottom:2px solid #fff;padding-bottom:2px;margin-left:14px}
+.player .title{position:absolute;top:22%;left:14px;right:14px;text-align:center;font-family:var(--zh-px);font-size:30px;line-height:1.15;color:#fff;z-index:3;text-shadow:3px 3px 0 #000}
+.player .title span{color:var(--gold)}
+.frame{position:absolute;left:0;right:0;top:36%;aspect-ratio:16/9;overflow:hidden;background:#111}
+.frame .img{position:absolute;inset:0;background-size:cover;background-position:center 30%;opacity:0;transform:scale(1.08)}
+.frame .img.on{opacity:1}
+.frame .img.cine{transition:opacity 1.2s,transform 3.2s linear}
+.frame .img.cine.on{transform:scale(1.2)}
+.frame .img.cut.on{animation:punch .35s cubic-bezier(.2,2,.4,1)}
+@keyframes punch{0%{transform:scale(1.35)}100%{transform:scale(1.08)}}
+.frame .cover{position:absolute;left:0;right:0;bottom:0;height:16%;background:#000}
+.frame .rec{position:absolute;inset:0;display:none;pointer-events:none;border:1px solid rgba(255,255,255,.25);margin:6px;font-family:var(--px);font-size:8px;color:#fff;padding:4px 6px}
+.frame .rec::before{content:"● REC  CAM-03";color:var(--red)}
+.frame.arch .rec{display:block}
+.frame.arch .img{filter:grayscale(.75) contrast(1.15)}
+.player .cap{position:absolute;top:calc(36% + 56.25vw*0);left:12px;right:12px;text-align:center;font-weight:900;font-size:17px;line-height:1.35;color:#fff;z-index:3;text-shadow:0 0 6px #000,2px 2px 0 #000}
+.player .cap span{color:var(--gold)}
+.player .side{position:absolute;right:10px;bottom:120px;display:flex;flex-direction:column;gap:18px;align-items:center;z-index:3;font-size:11px;color:#fff}
+.player .side div{display:flex;flex-direction:column;align-items:center;gap:2px}
+.player .side .av{width:40px;height:40px;border-radius:50%;background:#222 center/cover;border:2px solid #fff}
+.player .side .ic{font-size:26px;line-height:1}
+.player .side .ic.h{color:#ff2d55;animation:beat 1s infinite}
+@keyframes beat{15%{transform:scale(1.25)}30%{transform:scale(1)}}
+.player .meta{position:absolute;left:14px;right:70px;bottom:40px;color:#fff;font-size:12px;z-index:3;line-height:1.5}
+.player .meta b{font-size:14px}
+.player .prog{position:absolute;left:0;right:0;bottom:24px;height:2px;background:rgba(255,255,255,.2);z-index:3}
+.player .prog i{display:block;height:100%;width:0;background:#fff}
+.player .shake{animation:shake .25s}
+@keyframes shake{25%{transform:translate(3px,-2px)}50%{transform:translate(-3px,2px)}75%{transform:translate(2px,1px)}}
+.after-shoot{display:none;flex-direction:column;gap:10px;margin-top:16px}
+.after-shoot .row{display:flex;gap:10px}
+.after-shoot .row .btn{flex:1;justify-content:center;font-size:18px;padding:12px}
+.result{border:2px dashed var(--line);padding:14px;font-size:13px;color:var(--dim)}
+.result b{color:var(--gold);font-family:var(--px);font-size:20px}
+
+/* ===== TRUTHS ===== */
+.truths{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:36px}
+.truth{background:var(--card);border:2px solid var(--line);padding:20px;display:flex;flex-direction:column;gap:10px}
+.truth .hp{display:flex;gap:3px}
+.truth .hp i{width:12px;height:12px;background:var(--gold)}
+.truth .hp i.e{background:var(--line)}
+.truth b{font-family:var(--zh-px);font-weight:400;font-size:34px;line-height:1}
+.truth p{margin:0;font-size:14px;color:var(--dim)}
+.truth small{font-family:var(--px);font-size:10px;letter-spacing:.14em;color:var(--gold)}
+
+/* ===== QUESTION ===== */
+.q{text-align:center}
+.q .mark{font-family:var(--px);font-size:clamp(140px,26vw,300px);line-height:1;color:var(--gold);text-shadow:8px 8px 0 #6a3b00;animation:bob 3s ease-in-out infinite}
+.q h2{margin-inline:auto;max-width:14em}
+.q .sub{margin-inline:auto}
+footer{padding-block:48px 64px;border-top:2px solid var(--line);color:var(--dim);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+footer b{font-family:var(--px);color:var(--ink);font-weight:400}
+
+/* reveal */
+.rv{opacity:1;transform:none}
+.js .rv{opacity:0;transform:translateY(24px);transition:opacity .8s,transform .8s cubic-bezier(.2,.8,.2,1)}
+.js .rv.in{opacity:1;transform:none}
+
+@media (max-width:900px){
+  .hero-grid,.studio{grid-template-columns:1fr}
+  .phone-col{position:relative;top:0}
+  .crew,.truths{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .opts.books{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:520px){
+  .opts.books{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .opts.two{grid-template-columns:1fr}
+  .stats b{font-size:20px}
+  .saul{right:-6px;bottom:-30px}
+  .bubble{display:none}
+  .role{height:128px}
+  .role b{font-size:24px}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.js .rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<canvas id="stars" aria-hidden="true"></canvas>
+<div class="scan" aria-hidden="true"></div>
+
+<!-- HERO -->
+<header class="hero">
+ <div class="wrap">
+  <div class="topbar"><span>AI 时代的更多可能性 · 分享</span><span class="rec"><i></i>NOW SHOOTING</span></div>
+  <div class="hero-grid">
+   <div>
+    <h1 class="px-shadow">一个人的<span class="l2">剧组</span></h1>
+    <p class="sub">我是大一学生，学公共关系和国际项目管理。过去一个月，我和一群 AI 做出了这些视频，在抖音涨到 16 万粉丝。往下滑，你也能拍一条。</p>
+    <div class="stats">
+     <div><b data-n="1">0</b><span>个真人</span></div>
+     <div><b data-n="1">0</b><span>个月</span></div>
+     <div><b data-n="160000" class="gold">0</b><span>抖音粉丝</span></div>
+    </div>
+    <div class="cta-row">
+     <a class="btn" href="#studio">拍一条你的视频 <span class="arr">▶</span></a>
+     <a class="btn ghost" href="#crew">看看我的团队</a>
+    </div>
+   </div>
+   <div style="position:relative">
+    <div class="cab">
+     <div class="crt" id="crt">
+      <video muted playsinline loop preload="metadata" src="a/jq.mp4" poster="a/jq_1.jpg"></video>
+      <video muted playsinline loop preload="none" src="a/wh.mp4" poster="a/wh_1.jpg"></video>
+      <video muted playsinline loop preload="none" src="a/gxq.mp4" poster="a/gxq_1.jpg"></video>
+      <video muted playsinline loop preload="none" src="a/nwr.mp4" poster="a/nwr_1.jpg"></video>
+      <video muted playsinline loop preload="none" src="a/zs.mp4" poster="a/zs_1.jpg"></video>
+     </div>
+     <div class="knobs"><span id="chname">CH 1 · 金钱心理学</span><div class="chs" id="chs"></div></div>
+    </div>
+    <img class="saul" src="a/saul.png" alt="一只索尔：账号的像素主角">
+    <div class="bubble">这些全是 AI 拍的</div>
+   </div>
+  </div>
+ </div>
+</header>
+
+<!-- COVER WALL -->
+<div class="wall" aria-label="账号主页上的封面">
+ <div class="wrap wall-cap"><span>@一只索尔 · 主页</span><span>一个月 · 160,000 粉丝</span></div>
+ <div class="track" id="track"></div>
+</div>
+
+<!-- CREW -->
+<section id="crew">
+ <div class="wrap">
+  <span class="lvl rv">Level 1 · Crew</span>
+  <h2 class="rv">以前要一个团队，<br><span class="gold">现在只要一个人。</span></h2>
+  <p class="sub rv">这叫 OPC，一人公司。点一下每张卡，看看谁在干活。</p>
+  <div class="crew rv" id="crewGrid"></div>
+  <div class="crew-foot rv"><span>Instagram 被 10 亿美元收购时，只有 13 个人。下一个，可能只有 1 个。</span><button class="btn ghost" id="flipAll" style="font-size:18px;padding:10px 16px">全部翻开</button></div>
+ </div>
+</section>
+
+<!-- BEFORE AFTER -->
+<section id="ba" style="padding-top:0">
+ <div class="wrap">
+  <span class="lvl rv">Level 2 · Retake</span>
+  <h2 class="rv">AI 一晚能出 79 个镜头，<br><span class="gold">大部分都是垃圾。</span></h2>
+  <p class="sub rv">左边是 AI 给自己打 72 分的版本，右边是推倒重来以后的成片。拖动中间的线对比。</p>
+  <div class="ba rv" id="baBox">
+   <img src="a/bad.jpg" alt="被否的版本">
+   <img class="after" src="a/good.jpg" alt="最终成片">
+   <span class="t l">TAKE 01 · 被否</span><span class="t r">FINAL · 成片</span>
+   <div class="bar"></div>
+  </div>
+  <div class="quotes rv"><span>「一坨屎中的一坨屎」</span><span>「打 10 分」</span><span>「很烂」</span><span>「差很多」</span></div>
+ </div>
+</section>
+
+<!-- STUDIO -->
+<section id="studio">
+ <div class="wrap">
+  <span class="lvl rv">Level 3 · Your Turn</span>
+  <h2 class="rv">现在轮到你了，<br><span class="gold">点几下，拍一条。</span></h2>
+  <p class="sub rv">你当导演，AI 团队干活。选一本书、一个开头、一种拍法，剩下的交给他们。</p>
+  <div class="studio">
+   <div class="steps">
+    <div class="step cur" id="st1"><div class="step-h"><i>1</i><b>选一本书</b></div><div class="opts books" id="optBook"></div></div>
+    <div class="step lock" id="st2"><div class="step-h"><i>2</i><b>选开头第一句</b></div><div class="opts" id="optHook"></div></div>
+    <div class="step lock" id="st3"><div class="step-h"><i>3</i><b>选拍法</b></div><div class="opts two" id="optStyle"></div></div>
+    <div class="step lock" id="st4"><div class="step-h"><i>4</i><b>选配音</b></div><div class="opts two" id="optVoice"></div></div>
+    <button class="btn shoot" id="shoot" disabled>开拍 <span class="arr">● REC</span></button>
+   </div>
+   <div class="phone-col">
+    <div class="phone"><div class="screen" id="screen">
+     <div class="notch"></div>
+     <div class="idle" id="idle"><img src="a/saul.png" alt=""><div class="big">等你开拍</div><div>左边选完四步，<br>你的视频会在这里播放</div></div>
+     <div class="console" id="console"></div>
+     <div class="player" id="player">
+      <div class="top">关注<b>推荐</b></div>
+      <div class="title" id="pTitle"></div>
+      <div class="frame" id="frame"><div class="img"></div><div class="img"></div><div class="cover"></div><div class="rec"></div></div>
+      <div class="cap" id="pCap"></div>
+      <div class="side">
+       <div><div class="av" style="background-image:url(a/saul.png)"></div></div>
+       <div><span class="ic h">♥</span><span id="likes">0</span></div>
+       <div><span class="ic">✎</span><span id="cmts">0</span></div>
+       <div><span class="ic">↗</span><span>分享</span></div>
+      </div>
+      <div class="meta"><b id="pUser">@你的名字</b><br><span id="pDesc"></span></div>
+      <div class="prog"><i id="pProg"></i></div>
+     </div>
+    </div></div>
+    <div class="after-shoot" id="after">
+     <div class="result" id="result"></div>
+     <div class="row"><button class="btn" id="replay">再放一遍</button><button class="btn ghost" id="again">换一条拍</button></div>
+     <button class="btn ghost" id="voiceBtn" style="justify-content:center;font-size:18px;padding:12px">🔊 打开配音</button>
+    </div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- TRUTHS -->
+<section id="truths">
+ <div class="wrap">
+  <span class="lvl rv">Level 4 · Boss</span>
+  <h2 class="rv">刚才那条视频，<br><span class="gold">真正的难点不在按钮里。</span></h2>
+  <p class="sub rv">AI 可以出一百版。下面这四样，它替代不了。</p>
+  <div class="truths rv">
+   <div class="truth"><small>TASTE</small><div class="hp"><i></i><i></i><i></i><i></i><i></i></div><b>审美</b><p>AI 给自己打 72 分的镜头，人看一眼就知道很烂。</p></div>
+   <div class="truth"><small>POINT</small><div class="hp"><i></i><i></i><i></i><i></i><i class="e"></i></div><b>观点</b><p>先想清楚这一期只讲哪一件事，再让 AI 动手。</p></div>
+   <div class="truth"><small>EMPATHY</small><div class="hp"><i></i><i></i><i></i><i></i><i class="e"></i></div><b>共情</b><p>观众是大学生。他们此刻在怕什么、想要什么？</p></div>
+   <div class="truth"><small>CALL</small><div class="hp"><i></i><i></i><i></i><i></i><i></i></div><b>拍板</b><p>推倒重来还是继续？这个决定只能你来做。</p></div>
+  </div>
+ </div>
+</section>
+
+<!-- QUESTION -->
+<section class="q" id="q">
+ <div class="wrap">
+  <div class="mark" aria-hidden="true">?</div>
+  <h2 class="rv">如果一个人就能是一家公司，<br><span class="gold">「组织」还需要存在吗？</span></h2>
+  <p class="sub rv">我没有答案。这是我想研究的方向，也留给你们。</p>
+ </div>
+</section>
+
+<footer><div class="wrap"><span>这个网站也是 AI 和我一起做的，用时 <b>&lt; 1 天</b></span><span><b>@一只索尔</b> · 香港高科院 · 2026</span></div></footer>
+
+<script>
+document.documentElement.classList.add('js');
+const $=s=>document.querySelector(s);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* pixel stars */
+(()=>{const c=$('#stars'),x=c.getContext('2d');let W,H,s=[];
+ function size(){W=c.width=innerWidth;H=c.height=innerHeight;s=[];for(let i=0;i<Math.min(160,W*H/9000);i++)s.push({x:Math.random()*W,y:Math.random()*H,z:Math.random()*3+1,t:Math.random()*6})}
+ size();addEventListener('resize',size);
+ function f(t){x.clearRect(0,0,W,H);for(const p of s){const a=.25+.35*Math.sin(t/700+p.t);x.fillStyle=p.z>3.4?'rgba(255,201,74,'+a+')':'rgba(243,236,220,'+a*.6+')';const k=p.z>3?3:2;x.fillRect(p.x|0,(p.y+scrollY*.05*p.z)%H|0,k,k)}if(!reduce)requestAnimationFrame(f)}
+ requestAnimationFrame(f);})();
+
+/* count up */
+function countUp(el){const end=+el.dataset.n,t0=performance.now();(function s(t){const p=Math.min(1,(t-t0)/1800),v=Math.round(end*(1-Math.pow(1-p,4)));el.textContent=v.toLocaleString('en-US');if(p<1)requestAnimationFrame(s)})(t0)}
+document.querySelectorAll('[data-n]').forEach(el=>reduce?el.textContent=(+el.dataset.n).toLocaleString('en-US'):countUp(el));
+
+/* reveal */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+/* CRT channels */
+(()=>{const vids=[...document.querySelectorAll('#crt video')],names=['金钱心理学','乌合之众','滚雪球','纳瓦尔宝典','终身成长'],chs=$('#chs');let cur=0,timer;
+ vids.forEach((v,i)=>{const b=document.createElement('button');b.textContent=i+1;b.setAttribute('aria-label','频道 '+(i+1)+'：'+names[i]);b.onclick=()=>{go(i);clearInterval(timer)};chs.appendChild(b)});
+ function go(i){vids[cur].classList.remove('on');vids[cur].pause();cur=i;const v=vids[i];v.preload='auto';v.currentTime=0;v.classList.add('on');v.play().catch(()=>{});
+  [...chs.children].forEach((b,k)=>b.classList.toggle('on',k===i));$('#chname').textContent='CH '+(i+1)+' · '+names[i]}
+ go(0);if(!reduce)timer=setInterval(()=>go((cur+1)%vids.length),7000);})();
+
+/* cover wall */
+(()=>{const ids=['gxq','nwr','c01','rl','rz','yz','sd','btyy'];const t=$('#track');
+ const html=ids.map(i=>`<img src="a/cv_${i}.jpg" alt="" loading="lazy">`).join('');t.innerHTML=html+html;})();
+
+/* crew */
+(()=>{const roles=[['WRITER','编剧','Claude 写稿'],['DIRECTOR','导演','Claude 分镜'],['ART','美术','Codex 画人物'],['SET','场景灯光','Claude 写代码搭景'],['VOICE','配音','AI 声线'],['MUSIC','配乐','自动声音系统'],['REVIEW','审片','AI 审美官打分'],['COVER','封面文案','封面套件']];
+ const g=$('#crewGrid');roles.forEach(r=>{const b=document.createElement('button');b.className='role';
+  b.innerHTML=`<div class="f"><small>${r[0]}</small><b>${r[1]}</b><em>${r[2]}</em></div><div class="b"><small>${r[0]}</small><b>我</b><em>最后拍板的人</em></div>`;
+  b.onclick=()=>b.classList.toggle('flip');g.appendChild(b)});
+ $('#flipAll').onclick=e=>{const all=[...g.children],on=!all.every(r=>r.classList.contains('flip'));all.forEach((r,i)=>setTimeout(()=>r.classList.toggle('flip',on),i*80));e.currentTarget.textContent=on?'翻回去':'全部翻开'};})();
+
+/* before / after */
+(()=>{const b=$('#baBox');let d=false;const set=x=>{const r=b.getBoundingClientRect();b.style.setProperty('--x',Math.max(0,Math.min(100,(x-r.left)/r.width*100))+'%')};
+ b.addEventListener('pointerdown',e=>{d=true;b.setPointerCapture(e.pointerId);set(e.clientX)});b.addEventListener('pointermove',e=>d&&set(e.clientX));b.addEventListener('pointerup',()=>d=false);})();
+
+/* ===== STUDIO ===== */
+const BOOKS={
+ jq:{name:'金钱心理学',frames:['jq_1','jq_2','jq_3','jq_4','jq_5'],title:['你想要的','<span>不是钱</span>'],
+  hooks:['如果你中了一百万，你会辞职吗？','你想要的不是钱，是自由。','巴菲特 99% 的财富，是 50 岁以后赚的。'],
+  lines:['上班摸鱼，你在桌子底下刮到了<span>一张彩票</span>。','一百万。你第一反应是什么？','大多数人想的是<span>买东西</span>。','但真正值钱的，是<span>不用看任何人脸色</span>。','你想要的不是钱，是<span>自由</span>。']},
+ wh:{name:'乌合之众',frames:['wh_1','wh_2','wh_3','wh_4','wh_5'],title:['一群人','<span>会变蠢</span>'],
+  hooks:['一个聪明人走进人群，智商就会掉一半。','你以为是你在选择，其实是人群在选。','为什么你在宿舍群里，会说平时不说的话？'],
+  lines:['一栋楼，每扇门后面都是一个<span>普通人</span>。','凌晨一点，一个人开始背单词。','第二天，整层楼都开始<span>卷</span>了。','这叫<span>传染</span>。','人群里没有你，只有<span>他们</span>。']},
+ gxq:{name:'滚雪球',frames:['gxq_1','gxq_2','gxq_3','gxq_4','gxq_5'],title:['人人都能','<span>捡到的剑</span>'],
+  hooks:['它不挑出身，不看智商，人人都捡得到。','你身边最有钱的人，可能只做对了一件事。','重要的不是雪有多大，是坡有多长。'],
+  lines:['它不挑出身，<span>人人都捡得到</span>。','重要的是找到<span>很湿的雪</span>，和很长的坡。','没效果？健身两个月，镜子里也没变化。','所有人都在买，你敢不敢<span>不买</span>？','时间，是最<span>被低估</span>的武器。']},
+ nwr:{name:'纳瓦尔宝典',frames:['nwr_1','nwr_2','nwr_3','nwr_4','nwr_5'],title:['你卖的是','<span>时间</span>'],
+  hooks:['马斯克眨一下眼，就多了你一年的工资。','你出卖的是时间，他出卖的是杠杆。','打工一小时一百块，这条路的天花板在哪？'],
+  lines:['四千多亿美元。你眨一下眼，他多了<span>一年</span>。','进了公司，<span>一小时一百块</span>。','培训你的人，就是把你<span>换掉</span>的人。','纳瓦尔说，杠杆只有<span>三种</span>。','代码、媒体、资本。哪一种<span>不用睡觉</span>？']},
+ zs:{name:'终身成长',frames:['zs_1','jq_5','wh_4','gxq_5','nwr_5'],title:['天才这个词','<span>毁了多少人</span>'],
+  hooks:['「你真聪明」，这句话毁了多少人？','那个人头戴王冠，后来被摘下了。','失败不是结论，只是一个动词。'],
+  lines:['那个人头戴<span>王冠</span>，沐浴在光里。','所有人都叫他<span>天才</span>。','直到有一天，他<span>输了</span>。','他不敢再试了，怕证明自己不是天才。','能力不是<span>天生的</span>，是练出来的。']}
+};
+const STYLES=[{id:'cut',name:'快剪',d:'一句一刀，节奏拉满',dur:1700},{id:'cine',name:'电影推镜',d:'慢推镜头，情绪铺开',dur:2800},{id:'arch',name:'监控档案',d:'冷色、REC，像在看录像',dur:2200}];
+const VOICES=[{id:'m',name:'电台男声',d:'低沉、稳',pitch:.85,rate:1.05},{id:'f',name:'科普女声',d:'清楚、亲切',pitch:1.15,rate:1.05},{id:'none',name:'不要配音',d:'只要字幕和画面',pitch:1,rate:1}];
+const S={book:null,hook:null,style:null,voice:null};
+
+function opt(parent,cls,html,onpick){const b=document.createElement('button');b.className='opt '+cls;b.innerHTML=html;b.onclick=()=>{[...parent.children].forEach(c=>c.classList.remove('sel'));b.classList.add('sel');onpick()};parent.appendChild(b);return b}
+function unlock(n){for(let i=1;i<=4;i++){const s=$('#st'+i);s.classList.toggle('lock',i>n);s.classList.toggle('cur',i===n);s.classList.toggle('done',i<n)}}
+Object.entries(BOOKS).forEach(([k,b])=>opt($('#optBook'),'',`<div class="th" style="background-image:url(a/${b.frames[0]}.jpg)"></div><b>${b.name}</b>`,()=>{S.book=k;S.hook=null;renderHooks();unlock(Math.max(2,S.style?S.voice?5:4:2));check()}));
+function renderHooks(){const p=$('#optHook');p.innerHTML='';BOOKS[S.book].hooks.forEach((h,i)=>opt(p,'hook',`<b>「${h}」</b>`,()=>{S.hook=i;unlock(S.style?(S.voice?5:4):3);check()}))}
+$('#optHook').innerHTML='<div style="color:var(--dim);font-size:14px">先选一本书</div>';
+STYLES.forEach(s=>opt($('#optStyle'),'',`<b>${s.name}</b><em>${s.d}</em>`,()=>{S.style=s;unlock(S.voice?5:4);check()}));
+VOICES.forEach(v=>opt($('#optVoice'),'',`<b>${v.name}</b><em>${v.d}</em>`,()=>{S.voice=v;unlock(5);check()}));
+function check(){$('#shoot').disabled=!(S.book&&S.hook!=null&&S.style&&S.voice);if(!$('#shoot').disabled)$('#shoot').scrollIntoView({behavior:reduce?'auto':'smooth',block:'nearest'})}
+
+let playTimer=null,voiceOn=false;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+$('#shoot').onclick=async()=>{
+ const b=BOOKS[S.book];stopPlay();
+ if(innerWidth<900)$('.phone').scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'});
+ $('#idle').style.display='none';$('#player').style.display='none';$('#after').style.display='none';
+ const c=$('#console');c.style.display='block';c.innerHTML='';
+ const log=async(t,ms)=>{const d=document.createElement('div');d.className='ln';c.appendChild(d);for(const ch of t){d.innerHTML+=ch;if(!reduce)await sleep(8)}await sleep(reduce?0:ms)};
+ c.innerHTML='<div class="pbar"><i id="pb"></i></div>';const pb=()=>$('#pb');
+ const steps=[
+  ['<b>[编剧]</b> 读完《'+b.name+'》… 提炼核心',400],
+  ['<b>[编剧]</b> 开头钩子：「'+b.hooks[S.hook]+'」',500],
+  ['<b>[导演]</b> 分镜 5 个，拍法：'+S.style.name,400],
+  ['<b>[美术]</b> 生成人物 / 场景 / 灯光 …',600],
+  ['<b>[配音]</b> '+S.voice.name+' 合成中 ▮▮▮▮▮▯▯',500],
+  ['<b>[审美官]</b> 自评 72 分 → <span style="color:#ff6b7a">不合格，重拍</span>',700],
+  ['<b>[美术]</b> 重拍第 2 版 …',500],
+  ['<b>[审美官]</b> 86 分 → 通过 ✓',400],
+  ['<b>[剪辑]</b> 合成成片 → 上传',300]];
+ for(let i=0;i<steps.length;i++){await log(steps[i][0],steps[i][1]);pb().style.width=((i+1)/steps.length*100)+'%'}
+ await sleep(reduce?0:400);c.style.display='none';play();
+};
+function stopPlay(){clearTimeout(playTimer);try{speechSynthesis.cancel()}catch(e){}}
+function speak(text){if(!voiceOn||S.voice.id==='none'||!('speechSynthesis' in window))return;try{const u=new SpeechSynthesisUtterance(text.replace(/<[^>]+>/g,''));u.lang='zh-CN';u.pitch=S.voice.pitch;u.rate=S.voice.rate;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}}
+function play(){
+ const b=BOOKS[S.book],st=S.style,p=$('#player'),fr=$('#frame'),imgs=fr.querySelectorAll('.img');
+ p.style.display='block';fr.className='frame'+(st.id==='arch'?' arch':'');
+ imgs.forEach(im=>{im.className='img '+st.id});
+ $('#pTitle').innerHTML=b.title.join('<br>');
+ $('#pDesc').textContent='#'+b.name+' #读书 #AI 「'+b.hooks[S.hook]+'」';
+ const lines=['「'+b.hooks[S.hook]+'」'].concat(b.lines.slice(1));
+ const capTop=()=>{const r=fr.getBoundingClientRect(),pr=p.getBoundingClientRect();$('#pCap').style.top=(r.bottom-pr.top+12)+'px'};capTop();
+ let i=0,flip=0,likes=0;const target=Math.round(8000+Math.random()*90000);
+ const total=lines.length*st.dur;let t0=performance.now();
+ (function tick(){const p2=Math.min(1,(performance.now()-t0)/total);$('#pProg').style.width=(p2*100)+'%';likes=Math.round(target*p2);$('#likes').textContent=likes>9999?(likes/10000).toFixed(1)+'w':likes;$('#cmts').textContent=Math.round(likes/37);if(p2<1&&$('#player').style.display==='block')requestAnimationFrame(tick)})();
+ function next(){
+  if(i>=lines.length){done(target);return}
+  const im=imgs[flip];flip^=1;im.style.backgroundImage=`url(a/${b.frames[i%b.frames.length]}.jpg)`;
+  imgs.forEach(x=>x.classList.remove('on'));void im.offsetWidth;im.classList.add('on');
+  if(st.id==='cut'&&!reduce){p.classList.remove('shake');void p.offsetWidth;p.classList.add('shake')}
+  $('#pCap').innerHTML=lines[i];speak(lines[i]);i++;playTimer=setTimeout(next,st.dur);
+ }
+ next();
+}
+function done(likes){
+ const a=$('#after');a.style.display='flex';
+ const plays=Math.round(likes*(14+Math.random()*10));
+ $('#result').innerHTML=`你刚当了一回导演。<br>模拟播放 <b>${plays.toLocaleString('en-US')}</b> 次<br><span style="font-size:12px">真实情况：这一步我推倒重来了几十次。</span>`;
+}
+$('#replay').onclick=()=>{stopPlay();$('#after').style.display='none';play()};
+$('#again').onclick=()=>{stopPlay();$('#player').style.display='none';$('#after').style.display='none';$('#idle').style.display='flex';$('#st1').scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'})};
+$('#voiceBtn').onclick=e=>{voiceOn=!voiceOn;e.currentTarget.textContent=voiceOn?'🔇 关掉配音':'🔊 打开配音';if(voiceOn){$('#replay').click()}else stopPlay()};
+addEventListener('resize',()=>{if($('#player').style.display==='block'){const fr=$('#frame'),p=$('#player'),r=fr.getBoundingClientRect(),pr=p.getBoundingClientRect();$('#pCap').style.top=(r.bottom-pr.top+12)+'px'}});
+</script>
+</body>
+</html>
